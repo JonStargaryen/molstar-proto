@@ -2,11 +2,12 @@ import * as argparse from 'argparse'
 import * as util from 'util'
 import { CIF, CifFrame } from '../../mol-io/reader/cif'
 import { trajectoryFromMmCIF } from '../../mol-model-formats/structure/mmcif';
-import { Model, Structure } from '../../mol-model/structure';
+import { Model, Structure, StructureElement, StructureProperties } from '../../mol-model/structure';
 import { InteractionsProvider } from '../../mol-model-props/computed/interactions';
 import { SyncRuntimeContext } from '../../mol-task/execution/synchronous';
 import { ajaxGet } from '../../mol-util/data-source';
 import fs = require('fs')
+import { interactionTypeLabel } from '../../mol-model-props/computed/interactions/common';
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -19,14 +20,44 @@ async function runThis(inPath: string, outPath: string) {
 
     await InteractionsProvider.attach(ctx, structure);
 
-    const interactions = InteractionsProvider.get(structure).value;
-    console.log(interactions);
-    const uc = interactions?.unitsContacts.get(0)!;
-    // console.log(uc.a);
-    // console.log(uc.b);
-    // console.log(uc.edgeProps);
-    for (let i = 0; i < uc.a.length; i++) {
-        console.log((i + 1) + ' ' + uc.a[i] + ' ' + uc.b[i]);
+    const interactions = InteractionsProvider.get(structure).value
+    if (!interactions) return;
+
+    const unitsFeatures = interactions.unitsFeatures;
+    const unitsContacts = interactions.unitsContacts;
+
+    const l1 = StructureElement.Location.create(structure);
+    const l2 = StructureElement.Location.create(structure);
+    let a, b, c1, c2, s1, s2;
+    for (let i = 0, il = structure.units.length; i < il; ++i) {
+        const unit = structure.units[i];
+        l1.unit = unit;
+        l2.unit = unit;
+
+        const features = unitsFeatures.get(unit.id)
+        if (!features) return;
+
+        const contacts = unitsContacts.get(unit.id)
+        if (!contacts) return;
+
+        for (let i = 0; i < contacts.a.length; i++) {
+            a = contacts.a[i];
+            b = contacts.b[i];
+            if (a < b) continue;
+            // features.members[features.offsets[contacts.a[i]]]; // works for hbonds
+            l1.element = unit.elements[features.members[features.offsets[a]]];
+            l2.element = unit.elements[features.members[features.offsets[b]]];
+            // TODO + 1 for multiple members
+            
+            c1 = StructureProperties.chain.auth_asym_id(l1);
+            s1 = StructureProperties.residue.label_seq_id(l1);
+            c2 = StructureProperties.chain.auth_asym_id(l2);
+            s2 = StructureProperties.residue.label_seq_id(l2);
+
+            console.log(`${c1} ${s1} ${c2} ${s2} ${interactionTypeLabel(contacts.edgeProps.type[i])}`)
+        
+            // TODO cif-export
+        }
     }
 }
 
@@ -57,7 +88,6 @@ async function getModels(frame: CifFrame) {
 async function getStructure(model: Model) {
     return Structure.ofModel(model);
 }
-
 
 const parser = new argparse.ArgumentParser({
     addHelp: true,
