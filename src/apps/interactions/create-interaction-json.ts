@@ -29,6 +29,7 @@ async function runThis(inPath: string, outPath: string) {
     const l1 = StructureElement.Location.create(structure);
     const l2 = StructureElement.Location.create(structure);
     let a, b, ii1: InteractionIdentifier, ii2: InteractionIdentifier, ir: InteractionRecord;
+    const output: InteractionRecord[] = [];
     for (let i = 0, il = structure.units.length; i < il; ++i) {
         const unit = structure.units[i];
         l1.unit = unit;
@@ -68,11 +69,17 @@ async function runThis(inPath: string, outPath: string) {
                 partner2: ii2,
                 type: interactionTypeLabel(contacts.edgeProps.type[i])
             }
+
+            output.push(ir);
             console.log(`${JSON.stringify(ir)}`)
         
             // TODO cif-export
         }
     }
+
+    fs.writeFile(outPath, JSON.stringify(output, null, 2), (err) => {
+        if (err) throw err;
+    });
 }
 
 interface InteractionRecord {

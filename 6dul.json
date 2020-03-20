@@ -1,0 +1,197 @@
+[
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 2,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ASN"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 5,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 3,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LEU"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 7,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 4,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LYS"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 8,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 5,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 8,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 5,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 9,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LEU"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 6,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LEU"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 10,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 7,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 11,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LYS"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 8,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 11,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LYS"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 9,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LEU"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 12,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LYS"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 9,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LEU"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 13,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ILE"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 10,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 13,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ILE"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 10,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "ALA"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 14,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LEU"
+    },
+    "type": "Hydrogen Bond"
+  },
+  {
+    "partner1": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 11,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "LYS"
+    },
+    "partner2": {
+      "auth_asym_id": "A",
+      "auth_seq_id": 15,
+      "pdbx_PDB_ins_code": "",
+      "label_comp_id": "NH2"
+    },
+    "type": "Hydrogen Bond"
+  }
+]
