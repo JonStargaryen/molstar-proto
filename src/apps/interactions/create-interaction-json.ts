@@ -7,7 +7,7 @@ import { InteractionsProvider } from '../../mol-model-props/computed/interaction
 import { SyncRuntimeContext } from '../../mol-task/execution/synchronous';
 import { ajaxGet } from '../../mol-util/data-source';
 import fs = require('fs')
-import { interactionTypeLabel } from '../../mol-model-props/computed/interactions/common';
+import { interactionTypeLabel, InteractionType } from '../../mol-model-props/computed/interactions/common';
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -28,7 +28,7 @@ async function runThis(inPath: string, outPath: string) {
 
     const l1 = StructureElement.Location.create(structure);
     const l2 = StructureElement.Location.create(structure);
-    let a, b, c1, c2, s1, s2;
+    let a, b, ii1: InteractionIdentifier, ii2: InteractionIdentifier, ir: InteractionRecord;
     for (let i = 0, il = structure.units.length; i < il; ++i) {
         const unit = structure.units[i];
         l1.unit = unit;
@@ -49,16 +49,42 @@ async function runThis(inPath: string, outPath: string) {
             l2.element = unit.elements[features.members[features.offsets[b]]];
             // TODO + 1 for multiple members
             
-            c1 = StructureProperties.chain.auth_asym_id(l1);
-            s1 = StructureProperties.residue.label_seq_id(l1);
-            c2 = StructureProperties.chain.auth_asym_id(l2);
-            s2 = StructureProperties.residue.label_seq_id(l2);
+            ii1 = {
+                auth_asym_id: StructureProperties.chain.auth_asym_id(l1),
+                label_seq_id: StructureProperties.residue.label_seq_id(l1),
+                pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l1),
+                label_comp_id: StructureProperties.residue.label_comp_id(l1)
+            };
+            ii2 = {
+                auth_asym_id: StructureProperties.chain.auth_asym_id(l2),
+                label_seq_id: StructureProperties.residue.label_seq_id(l2),
+                pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l2),
+                label_comp_id: StructureProperties.residue.label_comp_id(l2)
+            };
 
-            console.log(`${c1} ${s1} ${c2} ${s2} ${interactionTypeLabel(contacts.edgeProps.type[i])}`)
+            ir = {
+                partner1: ii1,
+                partner2: ii2,
+                type: interactionTypeLabel(contacts.edgeProps.type[i])
+            }
+            console.log(`${JSON.stringify(ir)}`)
         
             // TODO cif-export
         }
     }
+}
+
+interface InteractionRecord {
+    partner1: InteractionIdentifier,
+    partner2: InteractionIdentifier,
+    type: string
+}
+
+interface InteractionIdentifier {
+    auth_asym_id: string,
+    label_seq_id: number,
+    pdbx_PDB_ins_code?: string,
+    label_comp_id: string
 }
 
 /**
