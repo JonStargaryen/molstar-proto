@@ -7,7 +7,7 @@ import { InteractionsProvider } from '../../mol-model-props/computed/interaction
 import { SyncRuntimeContext } from '../../mol-task/execution/synchronous';
 import { ajaxGet } from '../../mol-util/data-source';
 import fs = require('fs')
-import { interactionTypeLabel, InteractionType } from '../../mol-model-props/computed/interactions/common';
+import { interactionTypeLabel } from '../../mol-model-props/computed/interactions/common';
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -43,21 +43,22 @@ async function runThis(inPath: string, outPath: string) {
         for (let i = 0; i < contacts.a.length; i++) {
             a = contacts.a[i];
             b = contacts.b[i];
+            // skip symmetric contacts
             if (a < b) continue;
-            // features.members[features.offsets[contacts.a[i]]]; // works for hbonds
-            l1.element = unit.elements[features.members[features.offsets[a]]];
-            l2.element = unit.elements[features.members[features.offsets[b]]];
-            // TODO + 1 for multiple members
-            
+
+            // + 1 needed for contacts with multiple members
+            l1.element = unit.elements[features.members[features.offsets[a]] + 1];
+            l2.element = unit.elements[features.members[features.offsets[b]] + 1];
+
             ii1 = {
                 auth_asym_id: StructureProperties.chain.auth_asym_id(l1),
-                label_seq_id: StructureProperties.residue.label_seq_id(l1),
+                auth_seq_id: StructureProperties.residue.auth_seq_id(l1),
                 pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l1),
                 label_comp_id: StructureProperties.residue.label_comp_id(l1)
             };
             ii2 = {
                 auth_asym_id: StructureProperties.chain.auth_asym_id(l2),
-                label_seq_id: StructureProperties.residue.label_seq_id(l2),
+                auth_seq_id: StructureProperties.residue.auth_seq_id(l2),
                 pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l2),
                 label_comp_id: StructureProperties.residue.label_comp_id(l2)
             };
@@ -82,7 +83,7 @@ interface InteractionRecord {
 
 interface InteractionIdentifier {
     auth_asym_id: string,
-    label_seq_id: number,
+    auth_seq_id: number,
     pdbx_PDB_ins_code?: string,
     label_comp_id: string
 }
