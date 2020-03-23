@@ -1,4 +1,3 @@
-import * as argparse from 'argparse'
 import * as util from 'util'
 import { CIF, CifFrame } from '../../mol-io/reader/cif'
 import { trajectoryFromMmCIF } from '../../mol-model-formats/structure/mmcif';
@@ -23,7 +22,7 @@ const readFileAsync = util.promisify(fs.readFile);
 //     };
 // }
 
-async function runThis(inPath: string, outPath: string) {
+export async function runSingle(inPath: string, outPath: string) {
     const ctx = { runtime: SyncRuntimeContext, fetch: ajaxGet }
 
     const block = inPath.indexOf('.') != -1 ? (await parseCif(await readFile(inPath))).blocks[0] : await downloadFromPdb(inPath);
@@ -83,8 +82,6 @@ async function runThis(inPath: string, outPath: string) {
             }
 
             output.push(ir);
-            console.log(`${JSON.stringify(ir)}`)
-        
             // TODO cif-export
         }
     }
@@ -144,21 +141,3 @@ async function downloadFromPdb(pdb: string) {
 async function getStructure(model: Model) {
     return Structure.ofModel(model);
 }
-
-const parser = new argparse.ArgumentParser({
-    addHelp: true,
-    description: 'Create a json file that contains all non-covalent interaction information for a PDB structure.'
-});
-parser.addArgument('in', {
-    help: 'Structure source file path.'
-});
-parser.addArgument('out', {
-    help: 'Generated file output path.'
-});
-interface Args {
-    in: string
-    out: string
-}
-const args: Args = parser.parseArgs();
-
-runThis(args.in, args.out);
