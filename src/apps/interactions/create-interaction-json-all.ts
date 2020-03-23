@@ -7,9 +7,10 @@ async function runAll(out: string) {
         .then(res => res.json())
         .then(json => json.idList);
 
-    for (let i = 0, j = ids.length; i < 10; i++) {
+    for (let i = 0, j = ids.length; i < j; i++) {
+        if (i % 5000 === 0) console.log(i + ' / ' + j)
         const id = ids[i].toLowerCase();
-        runSingle(id, out + '/' + id + '.json');
+        await runSingle(id, out + '/' + id + '.json');
     }
 }
 
