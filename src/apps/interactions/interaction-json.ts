@@ -75,10 +75,18 @@ export async function runSingle(inPath: string, outPath: string) {
                 label_comp_id: StructureProperties.residue.label_comp_id(l2)
             };
 
+
+
             ir = {
                 partner1: ii1,
                 partner2: ii2,
                 type: interactionTypeLabel(contacts.edgeProps.type[i])
+            }
+
+            // check for 'relevant' interactions
+            if (!isSane(ii1) || !isSane(ii2)) {
+                console.log(ir);
+                continue;
             }
 
             output.push(ir);
@@ -89,6 +97,12 @@ export async function runSingle(inPath: string, outPath: string) {
     fs.writeFile(outPath, JSON.stringify(output, null, 2), (err) => {
         if (err) throw err;
     });
+}
+
+function isSane(ii: InteractionIdentifier) {
+    if (ii.label_comp_id === 'HOH') return false;
+    if (ii.auth_asym_id === void 0 || ii.auth_seq_id === void 0 || ii.pdbx_PDB_ins_code === void 0) return false;
+    return true;
 }
 
 interface InteractionRecord {
