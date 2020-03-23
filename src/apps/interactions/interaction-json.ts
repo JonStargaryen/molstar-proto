@@ -75,18 +75,15 @@ export async function runSingle(inPath: string, outPath: string) {
                 label_comp_id: StructureProperties.residue.label_comp_id(l2)
             };
 
-
+            // check for 'relevant' interactions
+            if (!isSane(ii1) || !isSane(ii2)) {
+                continue;
+            }
 
             ir = {
                 partner1: ii1,
                 partner2: ii2,
                 type: interactionTypeLabel(contacts.edgeProps.type[i])
-            }
-
-            // check for 'relevant' interactions
-            if (!isSane(ii1) || !isSane(ii2)) {
-                console.log(ir);
-                continue;
             }
 
             output.push(ir);
