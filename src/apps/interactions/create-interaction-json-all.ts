@@ -1,6 +1,7 @@
 import * as argparse from 'argparse'
 import fetch from 'node-fetch'
 import { runSingle } from './interaction-json';
+import fs = require('fs')
 
 async function runAll(out: string) {
     const ids: string[] = await fetch('http://www.rcsb.org/pdb/json/getCurrent')
@@ -10,7 +11,9 @@ async function runAll(out: string) {
     for (let i = 0, j = ids.length; i < j; i++) {
         if (i % 5000 === 0) console.log(i + ' / ' + j)
         const id = ids[i].toLowerCase();
-        await runSingle(id, out + '/' + id + '.json');
+        if (!fs.existsSync(out + '/' + id + '.json')) {
+            await runSingle(id, out + '/' + id + '.json');
+        }
     }
 }
 
