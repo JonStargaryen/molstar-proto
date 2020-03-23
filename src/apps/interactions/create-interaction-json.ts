@@ -8,6 +8,7 @@ import { SyncRuntimeContext } from '../../mol-task/execution/synchronous';
 import { ajaxGet } from '../../mol-util/data-source';
 import fs = require('fs')
 import { interactionTypeLabel } from '../../mol-model-props/computed/interactions/common';
+import fetch from 'node-fetch'
 // import { CifWriter } from '../../mol-io/writer/cif';
 // import CifCategory = CifWriter.Category
 
@@ -25,8 +26,8 @@ const readFileAsync = util.promisify(fs.readFile);
 async function runThis(inPath: string, outPath: string) {
     const ctx = { runtime: SyncRuntimeContext, fetch: ajaxGet }
 
-    const cif = await parseCif(await readFile(inPath));
-    const models = await getModels(cif.blocks[0]);
+    const block = inPath.indexOf('.') != -1 ? (await parseCif(await readFile(inPath))).blocks[0] : await downloadFromPdb(inPath);
+    const models = await getModels(block);
     const structure = await getStructure(models[0]);
 
     await InteractionsProvider.attach(ctx, structure);
@@ -128,6 +129,16 @@ async function parseCif(data: string|Uint8Array) {
 
 async function getModels(frame: CifFrame) {
     return await trajectoryFromMmCIF(frame).run();
+}
+
+async function downloadCif(url: string, isBinary: boolean) {
+    const data = await fetch(url);
+    return parseCif(isBinary ? new Uint8Array(await data.arrayBuffer()) : await data.text());
+}
+
+async function downloadFromPdb(pdb: string) {
+    const parsed = await downloadCif(`https://models.rcsb.org/${pdb}.bcif`, true);
+    return parsed.blocks[0];
 }
 
 async function getStructure(model: Model) {
