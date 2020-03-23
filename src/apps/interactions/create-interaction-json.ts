@@ -2,38 +2,26 @@ import * as argparse from 'argparse'
 import * as util from 'util'
 import { CIF, CifFrame } from '../../mol-io/reader/cif'
 import { trajectoryFromMmCIF } from '../../mol-model-formats/structure/mmcif';
-import { Model, Structure, StructureElement, StructureProperties, CifExportContext } from '../../mol-model/structure';
+import { Model, Structure, StructureElement, StructureProperties } from '../../mol-model/structure';
 import { InteractionsProvider } from '../../mol-model-props/computed/interactions';
 import { SyncRuntimeContext } from '../../mol-task/execution/synchronous';
 import { ajaxGet } from '../../mol-util/data-source';
 import fs = require('fs')
 import { interactionTypeLabel } from '../../mol-model-props/computed/interactions/common';
-import { Column } from '../../mol-data/db';
-import { CifWriter } from '../../mol-io/writer/cif';
-import { getModelMmCifCategory, getUniqueEntityIdsFromStructures } from '../../mol-model/structure/export/categories/utils';
-import CifCategory = CifWriter.Category
+// import { CifWriter } from '../../mol-io/writer/cif';
+// import CifCategory = CifWriter.Category
 
 const readFileAsync = util.promisify(fs.readFile);
-export const _struct_asym: CifCategory<CifExportContext> = createCategory('interactions');
-    function createCategory(categoryName: 'interactions'): CifCategory<CifExportContext> {
-        return {
-            name: categoryName,
-            instance({ structures, cache }) {
-                return getCategoryInstance(structures, categoryName, cache);
-            }
-        };
-    }
-    
-function getCategoryInstance(structures: Structure[], categoryName: 'interactions', cache: any) {
-    const category = getModelMmCifCategory(structures[0].model, categoryName);
-    if (!category) return CifCategory.Empty;
-    const { entity_id } = category;
-    const names = cache.uniqueEntityIds || (cache.uniqueEntityIds = getUniqueEntityIdsFromStructures(structures));
-    const indices = Column.indicesOf(entity_id, id => names.has(id));
-    return CifCategory.ofTable(category, indices);
+// export const _struct_asym: CifCategory<CifExportContext> = createCategory('interactions');
+// function createCategory(categoryName: 'interactions'): CifCategory<CifExportContext> {
+//     return {
+//         name: categoryName,
+//         instance({ structures, cache }) {
+//             return getCategoryInstance(structures, categoryName, cache);
+//         }
+//     };
+// }
 
-}
-    
 async function runThis(inPath: string, outPath: string) {
     const ctx = { runtime: SyncRuntimeContext, fetch: ajaxGet }
 
