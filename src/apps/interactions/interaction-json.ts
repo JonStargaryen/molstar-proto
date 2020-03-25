@@ -23,77 +23,81 @@ const readFileAsync = util.promisify(fs.readFile);
 // }
 
 export async function runSingle(inPath: string, outPath: string) {
-    const ctx = { runtime: SyncRuntimeContext, fetch: ajaxGet }
+    try {
+        const ctx = { runtime: SyncRuntimeContext, fetch: ajaxGet }
 
-    const block = inPath.indexOf('.') != -1 ? (await parseCif(await readFile(inPath))).blocks[0] : await downloadFromPdb(inPath);
-    const models = await getModels(block);
-    const structure = await getStructure(models[0]);
+        const block = inPath.indexOf('.') != -1 ? (await parseCif(await readFile(inPath))).blocks[0] : await downloadFromPdb(inPath);
+        const models = await getModels(block);
+        const structure = await getStructure(models[0]);
 
-    await InteractionsProvider.attach(ctx, structure);
+        await InteractionsProvider.attach(ctx, structure);
 
-    const interactions = InteractionsProvider.get(structure).value
-    if (!interactions) return;
+        const interactions = InteractionsProvider.get(structure).value
+        if (!interactions) return;
 
-    const unitsFeatures = interactions.unitsFeatures;
-    const unitsContacts = interactions.unitsContacts;
+        const unitsFeatures = interactions.unitsFeatures;
+        const unitsContacts = interactions.unitsContacts;
 
-    const l1 = StructureElement.Location.create(structure);
-    const l2 = StructureElement.Location.create(structure);
-    let a, b, ii1: InteractionIdentifier, ii2: InteractionIdentifier, ir: InteractionRecord;
-    const output: InteractionRecord[] = [];
-    for (let i = 0, il = structure.units.length; i < il; ++i) {
-        const unit = structure.units[i];
-        l1.unit = unit;
-        l2.unit = unit;
+        const l1 = StructureElement.Location.create(structure);
+        const l2 = StructureElement.Location.create(structure);
+        let a, b, ii1: InteractionIdentifier, ii2: InteractionIdentifier, ir: InteractionRecord;
+        const output: InteractionRecord[] = [];
+        for (let i = 0, il = structure.units.length; i < il; ++i) {
+            const unit = structure.units[i];
+            l1.unit = unit;
+            l2.unit = unit;
 
-        const features = unitsFeatures.get(unit.id)
-        if (!features) return;
+            const features = unitsFeatures.get(unit.id)
+            if (!features) return;
 
-        const contacts = unitsContacts.get(unit.id)
-        if (!contacts) return;
+            const contacts = unitsContacts.get(unit.id)
+            if (!contacts) return;
 
-        for (let i = 0; i < contacts.a.length; i++) {
-            a = contacts.a[i];
-            b = contacts.b[i];
-            // skip symmetric contacts
-            if (a < b) continue;
+            for (let i = 0; i < contacts.a.length; i++) {
+                a = contacts.a[i];
+                b = contacts.b[i];
+                // skip symmetric contacts
+                if (a < b) continue;
 
-            // + 1 needed for contacts with multiple members
-            l1.element = unit.elements[features.members[features.offsets[a]] + 1];
-            l2.element = unit.elements[features.members[features.offsets[b]] + 1];
+                // + 1 needed for contacts with multiple members
+                l1.element = unit.elements[features.members[features.offsets[a]] + 1];
+                l2.element = unit.elements[features.members[features.offsets[b]] + 1];
 
-            ii1 = {
-                auth_asym_id: StructureProperties.chain.auth_asym_id(l1),
-                auth_seq_id: StructureProperties.residue.auth_seq_id(l1),
-                pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l1),
-                label_comp_id: StructureProperties.residue.label_comp_id(l1)
-            };
-            ii2 = {
-                auth_asym_id: StructureProperties.chain.auth_asym_id(l2),
-                auth_seq_id: StructureProperties.residue.auth_seq_id(l2),
-                pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l2),
-                label_comp_id: StructureProperties.residue.label_comp_id(l2)
-            };
+                ii1 = {
+                    auth_asym_id: StructureProperties.chain.auth_asym_id(l1),
+                    auth_seq_id: StructureProperties.residue.auth_seq_id(l1),
+                    pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l1),
+                    label_comp_id: StructureProperties.residue.label_comp_id(l1)
+                };
+                ii2 = {
+                    auth_asym_id: StructureProperties.chain.auth_asym_id(l2),
+                    auth_seq_id: StructureProperties.residue.auth_seq_id(l2),
+                    pdbx_PDB_ins_code: StructureProperties.residue.pdbx_PDB_ins_code(l2),
+                    label_comp_id: StructureProperties.residue.label_comp_id(l2)
+                };
 
-            // check for 'relevant' interactions
-            if (!isSane(ii1) || !isSane(ii2)) {
-                continue;
+                // check for 'relevant' interactions
+                if (!isSane(ii1) || !isSane(ii2)) {
+                    continue;
+                }
+
+                ir = {
+                    partner1: ii1,
+                    partner2: ii2,
+                    type: interactionTypeLabel(contacts.edgeProps.type[i])
+                }
+
+                output.push(ir);
+                // TODO cif-export
             }
-
-            ir = {
-                partner1: ii1,
-                partner2: ii2,
-                type: interactionTypeLabel(contacts.edgeProps.type[i])
-            }
-
-            output.push(ir);
-            // TODO cif-export
         }
-    }
 
-    fs.writeFile(outPath, JSON.stringify(output, null, 2), (err) => {
-        if (err) throw err;
-    });
+        fs.writeFile(outPath, JSON.stringify(output, null, 2), (err) => {
+            if (err) throw err;
+        });
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 function isSane(ii: InteractionIdentifier) {
